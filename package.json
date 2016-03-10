@@ -1,0 +1,32 @@
+{
+    "name": "push",
+    "version": "0.0.1",
+    "description": "app message  push service",
+    "main": "pm2.json",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TOP-Chao/push.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "koa": "^1.2.0",
+        "koa-bodyparser": "^2.0.1",
+        "koa-ejs": "^3.0.0",
+        "koa-route": "^2.4.2",
+        "msgpack-js": "^0.3.0",
+        "socket.io": "^1.4.5",
+        "socket.io-emitter": "^1.0.0",
+        "socket.io-parser": "^2.2.6",
+        "socket.io-redis": "^1.0.0"
+    },
+    "devDependencies": {
+        "redis": "^2.4.2",
+        "request": "^2.69.0",
+        "commander": "^2.9.0",
+        "heapdump": "^0.3.7",
+        "memwatch-next": "^0.2.10",
+        "node-uuid": "^1.4.7",
+        "socket.io-client": "^1.4.5"
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "io": {
+        "path": "http://localhost",
+        "port": 1994,
+        "nsp": "/heikuai",
+        "key": "socket.io",
+        "options": {
+            "pingTimeout": 20000,
+            "pingInterval": 15000,
+            "transports": ["polling", "websocket"]
+        }
+    },
+    "redis": {
+        "host": "localhost",
+        "port": 6379
+    },
+    "separator": ",",
+    "serversNumber": 1
+}
