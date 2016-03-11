@@ -114,4 +114,4 @@ socket.packet = function(packet, opts) {
 
 **client** 和 **message** 具体命令可以使用 -h 查询帮助
 
-在`development`环境下，可以使用[自定义客户端](http://localhost:1994/usr/wenchao) 和 [消息发送](http://localhost:1994/test)
+在`development`环境下，可以使用[自定义客户端](http://localhost:1994/user/wenchao) 和 [消息发送](http://localhost:1994/test)
