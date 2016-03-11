@@ -86,7 +86,8 @@ module.exports = {
     login: function(socket, uid) {
         //保存用户信息
         socket.heikuai = {
-            uid: uid
+            uid: uid,
+            tags: []
         };
 
         //用socket.id创建一个单独房间
@@ -101,8 +102,14 @@ module.exports = {
 
             //如果没有查询到数据 说明没有分组信息
             if (reply && socket.client.conn.readyState == 'open') {
-                reply.split(config.separator).forEach(function(room) {
-                    if (room) socket.join(room);
+                reply.split(config.separator).forEach((room) => {
+                    if (room) {
+                        socket.join(room);
+                        //把房间定义为标签 tag 存入socket.heikuai.tags中
+                        socket.heikuai.tags.push(room);
+                        //把标签格式化数据存入到redis中 方便后台查询
+                        this.redis.set(util.format('tag@%s@%s', room, uid), '');
+                    }
                 });
             }
         });
@@ -128,16 +135,21 @@ module.exports = {
      */
     logout: function(socket) {
         if (socket.heikuai) {
-            let uid = socket.heikuai.uid,
-                socketID = socket.id;
+            let socketID = socket.id;
             //删除记录
-            this.redis.get(util.format('user@%s', uid), (err, reply) => {
+            this.redis.get(util.format('user@%s', socket.heikuai.uid), (err, reply) => {
                 if (err) console.error(err);
-                if (socketID === reply) this.redis.del(util.format('user@%s', uid));
+                if (socketID === reply) {
+                    this.redis.del(util.format('user@%s', socket.heikuai.uid));
+                    //同时移除标签信息
+                    socket.heikuai.tags.forEach((tag) => {
+                        this.redis.del(util.format('tag@%s@%s', tag, socket.heikuai.uid));
+                    });
+                }
+                socket.heikuai = null;
             });
             //离开所有房间
             socket.leaveAll();
-            socket.heikuai = null;
         }
     },
     /**
@@ -157,16 +169,27 @@ module.exports = {
      */
     changeRoom: function(socket, packet) {
         let msg = packet.data[2];
-        if (msg.joins) {
-            msg.joins.split(config.separator).forEach(function(room) {
-                if (room) socket.join(room);
-            });
-        }
+        if (socket.heikuai) {
+            if (msg.joins) {
+                msg.joins.split(config.separator).forEach((room) => {
+                    if (room && socket.heikuai.tags.indexOf(room) === -1) {
+                        socket.join(room); //加入房间
+                        socket.heikuai.tags.push(room); //存储标签
+                        this.redis.set(util.format('tag@%s@%s', room, socket.heikuai.uid), ''); //存储标签
+                    }
+                });
+            }
 
-        if (msg.leaves) {
-            msg.leaves.split(config.separator).forEach(function(room) {
-                if (room) socket.leave(room);
-            });
+            if (msg.leaves) {
+                msg.leaves.split(config.separator).forEach((room) => {
+                    let index;
+                    if (room && (index = socket.heikuai.tags.indexOf(room)) !== -1) {
+                        socket.leave(room); //离开房间
+                        socket.heikuai.tags.splice(index, 1); //移除标签
+                        this.redis.del(util.format('tag@%s@%s', room, socket.heikuai.uid)); //移除标签
+                    }
+                });
+            }
         }
     },
     /**
@@ -219,10 +242,10 @@ module.exports = {
 
             if (packet.data[0] === 'changeRoom' && packet.data[1] == '-2') {
                 //切换分组
-                this.getSocketByEmitMsg(rooms, except, packet, this.changeRoom);
+                this.getSocketByEmitMsg(rooms, except, packet, this.changeRoom.bind(this));
             } else if (packet.data[0] === 'repeat' && packet.data[1] == '-1') {
                 //重复登录
-                this.getSocketByEmitMsg(rooms, except, packet, this.repeat);
+                this.getSocketByEmitMsg(rooms, except, packet, this.repeat.bind(this));
             }
         });
     },
