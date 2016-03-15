@@ -75,8 +75,17 @@ module.exports = function(app) {
     //测试环境 提供测试操作
     if (process.env.NODE_ENV === 'development') {
         app.use(route.get('/user/:id', function*() {
+            let ip = 'localhost',
+                network = require('os').networkInterfaces();
+            if (network.eth0 || network.en0) {
+                (network.eth0 || network.en0).forEach((details) => {
+                    if (details.family == 'IPv4') {
+                        ip = details.address;
+                    }
+                });
+            }
             yield this.render('index', {
-                path: (config.io.path + ':' + process.env.PORT + config.io.nsp).replace('http', 'ws'),
+                path: ('http://' + ip + ':' + process.env.PORT + config.io.nsp).replace('http', 'ws'),
                 uid: this.request.url.replace('/user/', '')
             });
         }));

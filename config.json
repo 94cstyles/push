@@ -1,6 +1,5 @@
 {
     "io": {
-        "path": "http://localhost",
         "port": 1994,
         "nsp": "/heikuai",
         "key": "socket.io",
