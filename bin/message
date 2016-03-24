@@ -33,9 +33,13 @@ if (program.path) {
                 "msgId": uuid.v1(),
                 "message": text
             }
-        }, function() {
-            setTimeout(sendMessage, program.time);
-            console.log('成功推送消息 ' + (++count) + ' 次');
+        }, function(err, res, body) {
+            if (!err && res.statusCode == 200) {
+                setTimeout(sendMessage, program.time);
+                console.log('成功推送消息 ' + (++count) + ' 次');
+            } else {
+                console.log('服务崩溃发送消息失败！');
+            }
         });
     };
 

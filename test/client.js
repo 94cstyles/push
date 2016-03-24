@@ -54,10 +54,10 @@ module.exports = function(options) {
             }
         };
 
-        var redisClient = redis({
+        var redisClient = options.redis ? redis({
             "host": options.redis,
             "port": 6379
-        });
+        }) : null;
         var inputStream = process.stdin,
             outputStream = process.stdout,
             rl = readline.createInterface({
@@ -116,12 +116,15 @@ module.exports = function(options) {
                 }
                 record.message[mid] = null;
                 delete record.message[mid];
-                //10秒后 从redis中删除数据
-                setTimeout(() => {
-                    users.forEach(function(uid) {
-                        redisClient.del(util.format('msg@%s@%s', mid, uid))
-                    });
-                }, 10 * 1000);
+
+                if (redisClient) {
+                    //10秒后 从redis中删除数据
+                    setTimeout(() => {
+                        users.forEach(function(uid) {
+                            redisClient.del(util.format('msg@%s@%s', mid, uid))
+                        });
+                    }, 10 * 1000);
+                }
             });
         }
 

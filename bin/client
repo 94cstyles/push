@@ -46,13 +46,11 @@ var options = {
     time: program.time
 };
 
-if (options.path && options.redis) {
+if (options.path) {
     //整数处理
     options.concurency = parseInt(options.concurency / options.worker);
     options.amount = parseInt(options.amount / options.concurency) * options.concurency;
     require('../test/client.js')(options);
-} else if (!options.path) {
-    console.log('请输入请求连接地址');
 } else {
-    console.log('请输入redis连接地址(不要设置密码以及更改端口)');
+    console.log('请输入请求连接地址');
 }
