@@ -2,13 +2,13 @@
     "apps": [{
         "name": "heikuai",
         "script": "app.js",
-        "watch": false,
+        "watch": true,
         "env": {
             "NODE_ENV": "development"
         },
         "instances": "max",
         "exec_mode": "cluster_mode",
-        "node_args": ["--harmony", "--nouse-idle-notification", "--max-old-space-size=3072"],
+        "node_args": ["--harmony", "--nouse-idle-notification", "--max-old-space-size=4096"],
         "error_file": "logs/err.log"
     }]
 }

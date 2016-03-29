@@ -352,7 +352,7 @@ module.exports = {
         //只有事件名为‘message’才添加回调
         if (arr && arr.length >= 3 && arr[1] === 'message') {
             //把ack添加进数据包
-            _packet = _packet[0] + (config.io.nsp === '/' ? '' : config.io.nsp + ',') + this.createAck(socket, arr[2]) + util.format('["message%s', _data.match(/^\["message([\s\S]*?)$/)[1]);
+            _packet = _packet[0] + (config.io.nsp === '/' ? '' : config.io.nsp + ',') + this.createAck(socket, arr[2]) + '["message' + _data.match(/^\["message([\s\S]*?)$/)[1];
         }
         return [_packet];
     }

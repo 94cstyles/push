@@ -28,6 +28,13 @@ app.on('error', function(err) {
     log.error('server error', err);
 });
 
+process.on("uncaughtException", function(error) {
+    if (error.toString() !== 'Error: IPC channel is already disconnected') {
+        process.stderr.write(error.stack);
+        process.exit(1);
+    }
+});
+
 //创建http服务
 const server = require('http').createServer(app.callback());
 server.listen(process.env.PORT);
@@ -36,7 +43,7 @@ server.listen(process.env.PORT);
 require('./modules/push.js').create(server);
 
 //内存泄露检测
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'dev') {
     var memwatch = require('memwatch-next'),
         heapdump = require('heapdump');
     memwatch.on('leak', function(info) {
