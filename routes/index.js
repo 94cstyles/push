@@ -55,7 +55,7 @@ module.exports = function(app) {
     app.use(route.post('/pushOffLineMsg', function*() {
         sendMessage.call(this, ['useraccount', 'msglist'], function(useraccount, msglist) {
             JSON.parse(msglist).forEach(function(obj) {
-                api.pushMsgToSingleDevice.call(api, useraccount, obj.msgId, obj.message);
+                api.pushMsgToSingleDevice.call(api, useraccount, obj.msgId, JSON.stringify(obj.message));
             });
         });
     }));

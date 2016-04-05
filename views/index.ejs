@@ -48,6 +48,9 @@
 
         var socket = io("<%= path %>");
         socket.on('message', function(mid, msg, time, next) {
+            //消息推送成功确认
+            arguments[arguments.length - 1]();
+
             var div = document.createElement('pre');
             div.innerHTML = JSON.stringify({
                 mid: mid,
@@ -56,9 +59,6 @@
             }, null, 4);
 
             document.body.appendChild(div);
-
-            //消息推送成功确认
-            next ? next() : time();
         });
         socket.on('repeat', function() {
             console.log('该账号重复登录');
