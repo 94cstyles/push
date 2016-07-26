@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>消息推送测试</title>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <style media="screen">
+        * {
+            font-family: tahoma !important;
+        }
+
+        .example {
+            padding: 15px;
+            margin: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .form-horizontal {
+            padding-top: 15px;
+        }
+
+        textarea.form-control {
+            height: 100px;
+            resize: none;
+        }
+    </style>
+</head>
+<body id="app">
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="example">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="active" role="presentation">
+                    <a href="#push" aria-controls="push" role="tab" data-toggle="tab">消息推送</a>
+                </li>
+                <li role="presentation">
+                    <a href="#room" aria-controls="room" role="tab" data-toggle="tab">更换房间</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" role="push" id="push">
+                    <form class="form-horizontal" v-bind:action="postType" method="post">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">推送类型</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" v-model="postType">
+                                    <option value="/pushMsgToSingleDevice" selected>向单个设备推送消息</option>
+                                    <option value="/pushBatchUniMsg">推送消息给批量设备</option>
+                                    <option value="/pushMsgToRoom">向房间中的用户推送消息</option>
+                                    <option value="/pushMsgToAll">推送消息给所有设备</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" v-if="postType == '/pushMsgToSingleDevice'">
+                            <label class="col-sm-2 control-label">用户ID</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" name="useraccount"/>
+                            </div>
+                        </div>
+                        <div class="form-group" v-if="postType == '/pushBatchUniMsg'">
+                            <label class="col-sm-2 control-label">用户IDS</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" name="useraccounts"/>
+                            </div>
+                        </div>
+                        <div class="form-group" v-if="postType == '/pushMsgToRoom'">
+                            <label class="col-sm-2 control-label">房间ID</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" name="tags"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">消息ID</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" name="msgId"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">消息内容</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" name="message"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-10 col-sm-offset-2">
+                                <button type="submit" class="btn btn-default">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane" role="room" id="room">
+                    <form class="form-horizontal" action="/changeRoom" method="post">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户IDS</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" name="useraccounts"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">加入IDS</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" name="joins"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">离开IDS</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="text" name="leaves"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-10 col-sm-offset-2">
+                                <button type="submit" class="btn btn-default">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.24/vue.min.js"></script>
+<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script>
+    new Vue({el: '#app'})
+</script>
+</html>

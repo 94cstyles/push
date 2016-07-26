@@ -1,32 +1,38 @@
 {
-    "name": "push",
-    "version": "0.0.1",
-    "description": "app message  push service",
-    "main": "pm2.json",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/TOP-Chao/push.git"
-    },
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "koa": "^1.2.0",
-        "koa-bodyparser": "^2.0.1",
-        "koa-ejs": "^3.0.0",
-        "koa-route": "^2.4.2",
-        "msgpack-js": "^0.3.0",
-        "socket.io": "^1.4.5",
-        "socket.io-emitter": "^1.0.0",
-        "socket.io-parser": "^2.2.6",
-        "socket.io-redis": "^1.0.0"
-    },
-    "devDependencies": {
-        "redis": "^2.4.2",
-        "request": "^2.69.0",
-        "commander": "^2.9.0",
-        "heapdump": "^0.3.7",
-        "memwatch-next": "^0.2.10",
-        "node-uuid": "^1.4.7",
-        "socket.io-client": "^1.4.5"
-    }
+  "name": "push",
+  "version": "1.0.0",
+  "description": "push server the heikuai",
+  "main": "pm2.json",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.coding.net/cstyles/push.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-core": "^6.9.1",
+    "babel-preset-es2015-node6": "^0.2.0",
+    "babel-preset-stage-3": "^6.5.0",
+    "co": "^4.6.0",
+    "debug": "^2.2.0",
+    "koa": "^2.0.0",
+    "koa-bodyparser": "^3.1.0",
+    "koa-ejs": "^3.0.0",
+    "koa-route": "^3.1.0",
+    "nodemailer": "^2.4.2",
+    "redis": "^2.6.1",
+    "socket.io": "^1.4.6",
+    "socket.io-emitter": "^1.0.0",
+    "socket.io-parser": "^2.2.6",
+    "socket.io-redis": "^1.0.0"
+  },
+  "devDependencies": {
+    "commander": "^2.9.0",
+    "node-uuid": "^1.4.7",
+    "request": "^2.72.0",
+    "socket.io-client": "^1.4.6"
+  }
 }

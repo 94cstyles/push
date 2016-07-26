@@ -6,13 +6,18 @@
         "options": {
             "pingTimeout": 20000,
             "pingInterval": 15000,
-            "transports": ["polling", "websocket"]
+            "transports": [
+                "polling",
+                "websocket"
+            ]
         }
     },
     "redis": {
         "host": "localhost",
         "port": 6379
     },
+    "email": null,
+    "delay": 10000,
     "separator": ",",
-    "serversNumber": 1
+    "serverNumber": 1
 }

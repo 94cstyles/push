@@ -1,80 +1,76 @@
 "use strict";
 
-const util = require('util');
-const route = require('koa-route');
-const api = require('../modules/api.js');
-const config = require('../config.json');
+import util from 'util';
+import route from 'koa-route';
+import api from '../modules/api';
+import config from '../config.json';
 
-module.exports = function(app) {
-    /**
-     * 消息推送处理
-     * @param  {[type]}   keys     必须参数
-     * @param  {Function} callback 回调函数
-     */
-    function sendMessage(keys, callback) {
+export default function routes(app) {
+    function getParams(body, keys) {
         var params = [];
         for (let key of keys) {
-            if (util.isNullOrUndefined(this.request.body[key])) {
-                return this.body = {
-                    code: 1,
-                    msg: "参数缺失"
-                }
+            if (util.isNullOrUndefined(body[key])) {
+                return null;
             }
-            params.push(this.request.body[key]);
+            params.push(body[key]);
+        }
+        if (!util.isNullOrUndefined(body['ack'])) {
+            params.push(/^(true|1)$/i.test(body['ack']));
         }
 
-        //回调
-        callback.apply(this, params);
+        return params;
+    }
 
-        this.body = {
+    function success(ctx, result) {
+        ctx.body = {
             code: 0,
-            msg: "发送成功"
+            msg: '推送成功',
+            body: result
         }
     }
 
-    app.use(route.post('/pushMsgToSingleDevice', function*() {
-        sendMessage.call(this, ['useraccount', 'msgId', 'message'], function() {
-            api.pushMsgToSingleDevice.apply(api, arguments);
-        });
+    function error(ctx) {
+        ctx.body = {
+            code: -1,
+            msg: '参数不完整,推送失败'
+        }
+    }
+
+    app.use(route.post('/pushMsgToSingleDevice', async function (ctx) {
+        let params = getParams(ctx.request.body, ['useraccount', 'msgId', 'message']);
+        params ? success(ctx, await api.pushMsgToSingleDevice.apply(api, params)) : error(ctx);
     }));
-    app.use(route.post('/pushBatchUniMsg', function*() {
-        sendMessage.call(this, ['useraccounts', 'msgId', 'message'], function() {
-            api.pushBatchUniMsg.apply(api, arguments);
-        });
+    app.use(route.post('/pushBatchUniMsg', async function (ctx) {
+        let params = getParams(ctx.request.body, ['useraccounts', 'msgId', 'message']);
+        params ? success(ctx, await api.pushBatchUniMsg.apply(api, params)) : error(ctx);
     }));
-    app.use(route.post('/pushMsgToRoom', function*() {
-        sendMessage.call(this, ['tags', 'msgId', 'message'], function() {
-            api.pushMsgToRoom.apply(api, arguments);
-        });
+    app.use(route.post('/pushMsgToRoom', async function (ctx) {
+        let params = getParams(ctx.request.body, ['tags', 'msgId', 'message']);
+        params ? success(ctx, await api.pushMsgToRoom.apply(api, params)) : error(ctx);
     }));
-    app.use(route.post('/pushMsgToAll', function*() {
-        sendMessage.call(this, ['msgId', 'message'], function() {
-            api.pushMsgToAll.apply(api, arguments);
-        });
+    app.use(route.post('/pushMsgToAll', async function (ctx) {
+        let params = getParams(ctx.request.body, ['msgId', 'message']);
+        params ? success(ctx, await api.pushMsgToAll.apply(api, params)) : error(ctx);
     }));
-    app.use(route.post('/pushOffLineMsg', function*() {
-        sendMessage.call(this, ['useraccount', 'msglist'], function(useraccount, msglist) {
-            JSON.parse(msglist).forEach(function(obj) {
-                api.pushMsgToSingleDevice.call(api, useraccount, obj.msgId, JSON.stringify(obj.message));
-            });
-        });
+    app.use(route.post('/pushOffLineMsg', async function (ctx) {
+        let params = getParams(ctx.request.body, ['useraccount', 'msglist']);
+        params ? success(ctx, await api.pushOffLineMsg.apply(api, params)) : error(ctx);
     }));
-    app.use(route.post('/changeRoom', function*() {
-        sendMessage.call(this, ['useraccounts'], function(useraccounts) {
-            if (this.request.body.joins || this.request.body.leaves) {
-                //通过推送 告知scoket 分组发生改变
-                api.pushBatchUniMsg.call(api, useraccounts, "-2", {
-                    joins: this.request.body.joins,
-                    leaves: this.request.body.leaves
-                }, 'changeRoom');
-            }
-        });
+    app.use(route.post('/changeRoom', async function (ctx) {
+        let params = getParams(ctx.request.body, ['useraccounts']);
+        if (ctx.request.body.joins || ctx.request.body.leaves) {
+            //通过推送 告知scoket 分组发生改变
+            api.pushBatchUniMsg.call(api, params[0], "-2", {
+                joins: ctx.request.body.joins,
+                leaves: ctx.request.body.leaves
+            }, 'changeRoom');
+        }
+        success(ctx, true);
     }));
 
-
-    //测试环境 提供测试操作
+    //开发测试
     if (process.env.NODE_ENV === 'development') {
-        app.use(route.get('/user/:id', function*() {
+        app.use(route.get('/user/:id', async function (ctx, uid) {
             let ip = 'localhost',
                 network = require('os').networkInterfaces();
             if (network.eth0 || network.en0) {
@@ -84,14 +80,13 @@ module.exports = function(app) {
                     }
                 });
             }
-            yield this.render('index', {
-                path: ('http://' + ip + ':' + process.env.PORT + config.io.nsp).replace('http', 'ws'),
-                uid: this.request.url.replace('/user/', '')
+            await ctx.render('user', {
+                path: ('ws://' + ip + ':' + process.env.PORT + config.io.nsp),
+                uid: uid
             });
         }));
-
-        app.use(route.get('/test', function*() {
-            yield this.render('form');
+        app.use(route.get('/test', async function (ctx) {
+            await ctx.render('test');
         }));
     }
-};
+}
