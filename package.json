@@ -4,30 +4,35 @@
   "description": "push server the heikuai",
   "main": "pm2.json",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon index.js",
+    "start": "pm2 start pm2.json"
   },
   "repository": {
     "type": "git",
-    "url": "https://git.coding.net/cstyles/push.git"
+    "url": "git+https://github.com/94cstyles/push.git"
   },
-  "author": "",
+  "engines": {
+    "node": ">=7.6"
+  },
+  "author": "cstyles",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/94cstyles/push/issues"
+  },
+  "homepage": "https://github.com/94cstyles/push#readme",
   "dependencies": {
-    "babel-core": "^6.9.1",
-    "babel-preset-es2015-node6": "^0.2.0",
-    "babel-preset-stage-3": "^6.5.0",
     "co": "^4.6.0",
     "debug": "^2.2.0",
     "koa": "^2.0.0",
-    "koa-bodyparser": "^3.1.0",
-    "koa-ejs": "^3.0.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-ejs": "^4.0.0",
     "koa-route": "^3.1.0",
-    "nodemailer": "^2.4.2",
+    "nodemailer": "^4.0.1",
     "redis": "^2.6.1",
-    "socket.io": "^1.4.6",
-    "socket.io-emitter": "^1.0.0",
-    "socket.io-parser": "^2.2.6",
-    "socket.io-redis": "^1.0.0"
+    "socket.io": "^1.7.3",
+    "socket.io-emitter": "^2.0.0",
+    "socket.io-parser": "^3.1.2",
+    "socket.io-redis": "^4.0.0"
   },
   "devDependencies": {
     "commander": "^2.9.0",
